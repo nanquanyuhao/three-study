@@ -31,9 +31,9 @@
             // 设置输出 canvas 画面的大小
             renderer.setSize(window.innerWidth, window.innerHeight);
             // 设置渲染物体阴影
-            renderer.shadowMapEnabled = true;
+            renderer.shadowMap.enabled = true;
             // 显示三维坐标系
-            var axes = new THREE.AxisHelper(20);
+            var axes = new THREE.AxesHelper(20);
 
             // 添加坐标系到场景中
             scene.add(axes);
