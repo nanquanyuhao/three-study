@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <script type="module">
+        import * as THREE from '../lib/build/three.module.js';
+        import { OrbitControls } from '../lib/jsm/controls/OrbitControls.js';
+        import { CSS2DRenderer, CSS2DObject } from '../lib/jsm/renderers/CSS2DRenderer.js';
+
+        // 声明全局变量
+        let camera, scene, renderer, labelRenderer;
+        let moon, earth;
+        let clock = new THREE.Clock();
+        // 实例化纹理加载器
+        const textureLoader = new THREE.TextureLoader();
+
+        function init(){
+            // 地球和月球半径大小
+            const EARTH_RADIUS = 2.5;
+            const MOON_RADIUS = 0.27;
+            // 实例化相机
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 200);
+            camera.position.set(10, 5, 20);
+
+            // 实例化场景
+            scene = new THREE.Scene();
+            // 创建聚光灯光源添加
+            const dirLight = new THREE.SpotLight(0xffffff);
+            dirLight.position.set(0, 0, 10);
+            // 光照强度设置
+            dirLight.intensity = 2;
+            dirLight.castShadow = true;
+            scene.add(dirLight);
+
+            // 创建月球
+            const moonGeometry = new THREE.SphereGeometry(MOON_RADIUS, 16, 16);
+            const moonMaterial = new THREE.MeshPhongMaterial({
+                map: textureLoader.load('textures/planets/moon_1024.jpg')
+            });
+            moon = new THREE.Mesh(moonGeometry, moonMaterial);
+            scene.add(moon);
+
+            // 创建渲染器
+            renderer = new THREE.WebGLRenderer({});
+            renderer.setPixelRatio(window.devicePixelRatio);
+            // 设置输出 canvas 画面的大小
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            // 渲染阴影
+            renderer.shadowMap.enabled = true;
+            // 将渲染器输出添加到 body
+            document.body.appendChild(renderer.domElement);
+
+            // 绑定控制器和摄像头
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        }
+
+        function animate(){
+            const elapsed = clock.getElapsedTime();
+            moon.position.set(Math.sin(elapsed) * 5, 0, Math.cos(elapsed) * 5);
+
+            // 地球自转
+            var axis = new THREE.Vector3(0, 1, 0);
+            // earth.rotateOnAxis(axis, elapsed * Math.PI / 1000);
+            renderer.render(scene, camera);
+        }
+
+        init();
+        animate();
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

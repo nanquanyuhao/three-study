@@ -110,6 +110,8 @@
 
             // 创建 controls 对象
             var controls = new THREE.OrbitControls(camera, renderer.domElement);
+            // 控制器惯性
+            // controls.enableDamping = true;
             // 监听控制器的鼠标事件，执行渲染内容
             controls.addEventListener('change', () => {
                 renderer.render(scene, camera);
