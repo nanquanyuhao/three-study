@@ -10,6 +10,16 @@
             margin: 0;
             padding: 0;
         }
+
+        canvas {
+            background-image: url(imgs/star.jpg);
+            background-size: cover;
+        }
+
+        .label {
+            color: #fff;
+            font-size: 16px;
+        }
     </style>
     <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
     <script type="importmap">
@@ -49,6 +59,10 @@
             dirLight.intensity = 2;
             dirLight.castShadow = true;
             scene.add(dirLight);
+            // 添加环境光
+            const aLight = new THREE.SpotLight(0xffffff);
+            aLight.intensity = 0.3;
+            scene.add(aLight);
 
             // 创建月球
             const moonGeometry = new THREE.SphereGeometry(MOON_RADIUS, 16, 16);
@@ -56,10 +70,48 @@
                 map: textureLoader.load('textures/planets/moon_1024.jpg')
             });
             moon = new THREE.Mesh(moonGeometry, moonMaterial);
+            moon.receiveShadow = true;
+            moon.castShadow = true;
             scene.add(moon);
 
+            // 创建地球
+            const earthGeometry = new THREE.SphereGeometry(EARTH_RADIUS, 16, 16);
+            const earthMaterial = new THREE.MeshPhongMaterial({
+                // 镜面反射调整
+                shininess: 5,
+                map: textureLoader.load('textures/planets/earth_atmos_2048.jpg'),
+                // 纹理
+                specularMap: textureLoader.load('textures/planets/earth_specular_2048.jpg'),
+                // 高光反射
+                normalMap: textureLoader.load('textures/planets/earth_normal_2048.jpg')
+            });
+            
+            earth = new THREE.Mesh(earthGeometry, earthMaterial);
+            // 地球接受阴影
+            earth.receiveShadow = true;
+            earth.castShadow = true;
+            scene.add(earth);
+
+            const earthDiv = document.createElement('div');
+            earthDiv.className = 'label';
+            earthDiv.textContent = 'Earth';
+            const earthLabel = new CSS2DObject(earthDiv);
+
+            earthLabel.position.set(0, EARTH_RADIUS + 0.5, 0);
+            earth.add(earthLabel);
+
+            const moonDiv = document.createElement('div');
+            moonDiv.className = 'label';
+            moonDiv.textContent = 'Moon';
+            const moonLabel = new CSS2DObject(moonDiv);
+
+            moonLabel.position.set(0, MOON_RADIUS + 0.5, 0);
+            moon.add(moonLabel);
+
             // 创建渲染器
-            renderer = new THREE.WebGLRenderer({});
+            renderer = new THREE.WebGLRenderer({
+                alph: true
+            });
             renderer.setPixelRatio(window.devicePixelRatio);
             // 设置输出 canvas 画面的大小
             renderer.setSize(window.innerWidth, window.innerHeight);
@@ -68,22 +120,41 @@
             // 将渲染器输出添加到 body
             document.body.appendChild(renderer.domElement);
 
+            // 标签渲染器
+            labelRenderer = new CSS2DRenderer();
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.domElement.style.position = 'absolute';
+            labelRenderer.domElement.style.top = '0px';
+            document.body.appendChild(labelRenderer.domElement);
+
             // 绑定控制器和摄像头
             const controls = new OrbitControls(camera, renderer.domElement);
         }
 
+        var oldtime = 0;
         function animate(){
             const elapsed = clock.getElapsedTime();
             moon.position.set(Math.sin(elapsed) * 5, 0, Math.cos(elapsed) * 5);
 
             // 地球自转
             var axis = new THREE.Vector3(0, 1, 0);
-            // earth.rotateOnAxis(axis, elapsed * Math.PI / 1000);
+            earth.rotateOnAxis(axis, (elapsed - oldtime) * Math.PI / 10);
             renderer.render(scene, camera);
+            labelRenderer.render(scene, camera);
+            oldtime = elapsed;
+            requestAnimationFrame(animate);
         }
 
         init();
         animate();
+
+        // 调整尺寸
+        window.onresize = function() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        }
     </script>
 </head>
 <body>
