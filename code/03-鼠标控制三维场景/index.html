@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="../lib/three.js"></script>
+    <script src="../lib/js/controls/OrbitControls.js"></script>
     <style>
         body {
             /* 边距设置为0，设置溢出隐藏，完整的使用整个页面 */
@@ -40,7 +41,7 @@
             // 创建地面的几何体
             var planeGeometry = new THREE.PlaneGeometry(60, 20);
             // 给地面物体上色
-            var planeMaterial = new THREE.MeshLambertMaterial({ color: 0xcccccc});
+            var planeMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc});
             // 创建地面
             var plane = new THREE.Mesh(planeGeometry, planeMaterial);
 
@@ -89,6 +90,10 @@
             var spotLight = new THREE.SpotLight(0xFFFFFF);
             spotLight.position.set(130, 130, -130);
             spotLight.castShadow = true;
+            spotLight.angle = Math.PI / 4;
+            spotLight.shadow.penumbra = 0.05;
+            spotLight.shadow.mapSize.width = 1024;
+            spotLight.shadow.mapSize.innerHeight = 1024;
 
             // 添加聚光灯
             scene.add(spotLight);
@@ -101,26 +106,14 @@
 
             // 将渲染器输出添加 html 元素中
             document.getElementById('webgl-output').appendChild(renderer.domElement);
-            // 其实本次渲染可以不执行
-            // renderer.render(scene, camera);
+            renderer.render(scene, camera);
 
-            let T0 = new Date();
-            function render() {
-                let T1 = new Date();
-                // t 为每次执行本函数的时间间隔，根据浏览器性能决定时间长短
-                let t = T1 - T0;
-                console.log('本次函数执行间隔：' + t + 'ms');
-                T0 = T1;
+            // 创建 controls 对象
+            var controls = new THREE.OrbitControls(camera, renderer.domElement);
+            // 监听控制器的鼠标事件，执行渲染内容
+            controls.addEventListener('change', () => {
                 renderer.render(scene, camera);
-                // 每次绕 y 轴旋转 0.01 弧度
-                // 每一毫秒渲染 0.001 弧度
-                cube.rotateY(0.001 * t);
-                window.requestAnimationFrame(render);
-            }
-            // // 间隔函数，不断进行渲染
-            // setInterval(render, 16);
-
-            window.requestAnimationFrame(render);
+            });
         }
         window.onload = init();
     </script>

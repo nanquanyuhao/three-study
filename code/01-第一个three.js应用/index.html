@@ -102,24 +102,8 @@
             // 将渲染器输出添加 html 元素中
             document.getElementById('webgl-output').appendChild(renderer.domElement);
             renderer.render(scene, camera);
-
-            let T0 = new Date();
-            function render() {
-                let T1 = new Date();
-                let t = T1 - T0;
-                T0 = T1;
-                renderer.render(scene, camera);
-                // 每次绕 y 轴旋转 0.01 弧度
-                // 每一毫秒渲染 0.001 弧度
-                cube.rotateY(0.001 * t);
-                window.requestAnimationFrame(render);
-            }
-            // // 间隔函数，不断进行渲染
-            // setInterval(render, 16);
-
-            window.requestAnimationFrame(render);
         }
-        window.onload = init;
+        window.onload = init();
     </script>
 </body>
 </html>
