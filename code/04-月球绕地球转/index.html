@@ -11,8 +11,17 @@
             padding: 0;
         }
     </style>
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "../lib/build/three.module.js"
+            }
+        }
+    </script>
     <script type="module">
-        import * as THREE from '../lib/build/three.module.js';
+        import * as THREE from 'three';
+        
         import { OrbitControls } from '../lib/jsm/controls/OrbitControls.js';
         import { CSS2DRenderer, CSS2DObject } from '../lib/jsm/renderers/CSS2DRenderer.js';
 
@@ -23,7 +32,7 @@
         // 实例化纹理加载器
         const textureLoader = new THREE.TextureLoader();
 
-        function init(){
+        function init() {
             // 地球和月球半径大小
             const EARTH_RADIUS = 2.5;
             const MOON_RADIUS = 0.27;
@@ -60,7 +69,7 @@
             document.body.appendChild(renderer.domElement);
 
             // 绑定控制器和摄像头
-            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            const controls = new OrbitControls(camera, renderer.domElement);
         }
 
         function animate(){
