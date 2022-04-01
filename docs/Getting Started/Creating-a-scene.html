@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	<body>
+		<script src="../lib/js/three.js"></script>
+		<script>
+
+            // 为了真正能够让你的场景借助 three.js 来进行显示，我们需要以下几个对象
+            // 场景、相机和渲染器，这样我们就能透过摄像机渲染出场景
+			const scene = new THREE.Scene();
+            // 创建透视摄像机（还有其他种），以下为各参数解释：
+            // 视野角度：无论在什么时候，你所能在显示器上看到的场景的范围，它的值是角度单位
+            // 长宽比：你用一个物体的宽除以它的高的值。比如说，当你在一个宽屏电视上播放老电影时，可以看到图像仿佛是被压扁的
+            // 近截面 & 远截面：当物体某些部分比摄像机的远截面远或者比近截面近的时候，该这些部分将不会被渲染到场景中
+			const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+            // WebGLRenderer 渲染器之外，Three.js 同时提供了其他几种渲染器，浏览器过于老旧或者由于其他原因不支持 WebGL 时可选择其他渲染器以降级
+			const renderer = new THREE.WebGLRenderer();
+			// 可以将渲染器宽高设置为浏览器窗口宽高
+            // 性能敏感情况下使用 setSize(window.innerWidth/2, window.innerHeight/2, false) 将使得你的应用程序以一半的分辨率来进行渲染整个画面
+            renderer.setSize( window.innerWidth, window.innerHeight );
+			// renderer.domElement 即渲染器用来显示场景给我们看的 <canvas> 元素
+            document.body.appendChild( renderer.domElement );
+
+            // 创建立方体对象
+			const geometry = new THREE.BoxGeometry();
+            // 创建立方体对象的材质，此处仅设置了颜色 0x00ff00 绿色
+			const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+            // 网格包含一个几何体以及作用在此几何体上的材质，我们可以直接将网格对象放入到我们的场景中，并让它在场景中自由移动
+			const cube = new THREE.Mesh( geometry, material );
+
+			// 物体默认将会被添加到 (0,0,0) 坐标，但将使得摄像机和立方体彼此在一起，只需要将摄像机稍微向外移动一些
+            scene.add( cube );
+			camera.position.z = 5;
+
+            // 实现渲染/动画循环
+			function animate() {
+
+                // 切换浏览器标签页它会停止渲染以不浪费算力
+				requestAnimationFrame( animate );
+
+                // 这段代码每帧都会执行，正常情况下是60次/秒
+                // 延 x 轴进行转动
+			    cube.rotation.x += 0.01;
+                // 延 y 轴进行转动
+				cube.rotation.y += 0.01;
+
+				renderer.render( scene, camera );
+			};
+
+			animate();
+		</script>
+	</body>
+</html>
