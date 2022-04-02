@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	<body>
+		<script async src="../../lib/js/es-module-shims.js"></script>
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "../../lib/js/three.module.js"
+				}
+			}
+		</script>
+		<script type="module">
+
+            import * as THREE from 'three';
+			import { GLTFLoader  } from '../../lib/jsm/loaders/GLTFLoader.js';
+
+			const scene = new THREE.Scene();
+			const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+			const renderer = new THREE.WebGLRenderer();
+			// 设置渲染器的初始颜色，0xFFFFFF 为白色
+            renderer.setClearColor(new THREE.Color(0xeeeeee));
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+
+            // 3D 模型加载器——gltf文件
+			const loader = new GLTFLoader();
+            loader.load( 'model/RobotExpressive.glb', function ( gltf ) {
+                // 成功后进行添加
+                scene.add( gltf.scene );
+            }, undefined, function ( error ) {
+                console.error( error );
+            } );
+
+			camera.position.z = 10;
+
+			// 创建聚光灯并添加否则看不清模型
+            const spotLight = new THREE.SpotLight(0xFFFFFF);
+            spotLight.position.set(0, 0, 50);
+            scene.add(spotLight);
+
+			function animate() {
+				requestAnimationFrame( animate );
+				renderer.render( scene, camera );
+			};
+
+			animate();
+		</script>
+	</body>
+</html>
