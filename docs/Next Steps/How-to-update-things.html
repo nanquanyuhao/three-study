@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	<body>
+		<script src="../lib/js/three.js"></script>
+		<script>
+			// 创建渲染器
+			const renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+
+			// 创建相机，相机向视线侧拉扯，看原点
+			const camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 500 );
+			camera.position.set( 0, 0, 100 );
+			camera.lookAt( 0, 0, 0 );
+
+			// 创建场景
+			const scene = new THREE.Scene();
+
+
+			const MAX_POINTS = 500;
+
+            // geometry
+            const geometry = new THREE.BufferGeometry();
+
+            // attributes，此处分配可容纳的顶点个数
+            const positions = new Float32Array( MAX_POINTS * 3 ); // 3 vertices per point
+            geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+
+            // draw range，绘制的顶点个数
+            const drawCount = 2; // draw the first 2 points, only
+            geometry.setDrawRange( 0, drawCount );
+
+            // material
+            const material = new THREE.LineBasicMaterial( { color: 0xff0000 } );
+
+            // line
+            const line = new THREE.Line( geometry, material );
+            scene.add( line );
+            renderer.render( scene, camera );
+
+            const positions_tmp = line.geometry.attributes.position.array;
+            let x, y, z, index;
+            x = y = z = index = 0;
+
+            for ( let i = 0, l = MAX_POINTS; i < l; i ++ ) {
+
+                positions_tmp[ index ++ ] = x;
+                positions_tmp[ index ++ ] = y;
+                positions_tmp[ index ++ ] = z;
+                x += ( Math.random() - 0.5 ) * 30;
+                y += ( Math.random() - 0.5 ) * 30;
+                z += ( Math.random() - 0.5 ) * 30;
+                console.log('坐标：（' + x + ',  '+ y + ', '+ z + '）');
+
+            }
+            
+            // 设置图形当前绘制的顶点个数，渲染前设置
+            line.geometry.setDrawRange(0, index);
+            // 设置初次渲染后，可更改 position 数值（容纳顶点数）
+            line.geometry.attributes.position.needsUpdate = true;
+            renderer.render( scene, camera );
+		</script>
+	</body>
+</html>
