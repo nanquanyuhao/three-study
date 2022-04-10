@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	<body>
+		<script async src="../lib/js/es-module-shims.js"></script>
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "../lib/js/three.module.js"
+				}
+			}
+		</script>
+
+		<script type="module">
+
+			import * as THREE from 'three';
+			import { OrbitControls } from '../lib/jsm/controls/OrbitControls.js';
+            import { EffectComposer } from '../lib/jsm/postprocessing/EffectComposer.js';
+            import { RenderPass } from '../lib/jsm/postprocessing/RenderPass.js';
+            import { GlitchPass } from '../lib/jsm/postprocessing/GlitchPass.js';
+			import { FilmPass } from '../lib/jsm/postprocessing/FilmPass.js';
+			// 用于自定义过程的依赖
+			import { ShaderPass } from '../lib/jsm/postprocessing/ShaderPass.js';
+			import { LuminosityShader } from '../lib/jsm/shaders/LuminosityShader.js';
+
+			const scene = new THREE.Scene();
+			const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+			const renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+            
+            // 创建后处理合成器
+            const composer = new EffectComposer( renderer );
+            // RenderPass 通常位于过程链的开始，以便将渲染好的场景作为输入来提供给下一个后期处理步骤
+            const renderPass = new RenderPass( scene, camera );
+            composer.addPass( renderPass );
+            // GlitchPass 将会使用这些图像数据，来应用一个疯狂的故障效果
+            const glitchPass = new GlitchPass();
+            composer.addPass( glitchPass );
+			// FilmPass 胶片效果
+			// const filmPass = new FilmPass();
+			// composer.addPass( filmPass );
+			// 可通过调整 LuminosityShader.js 文件完成后处理，实现着色器矩阵处理逻辑即可
+			// const luminosityPass = new ShaderPass( LuminosityShader );
+			// composer.addPass( luminosityPass );
+			document.body.appendChild( renderer.domElement );
+
+			// 绑定控制器和摄像头
+            const controls = new OrbitControls(camera, renderer.domElement);
+
+			const geometry = new THREE.BoxGeometry();
+			const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+			const cube = new THREE.Mesh( geometry, material );
+			scene.add( cube );
+
+			camera.position.z = 5;
+
+			function animate() {
+				requestAnimationFrame( animate );
+
+				cube.rotation.x += 0.01;
+				cube.rotation.y += 0.01;
+
+                // renderer.render( scene, camera );
+                // 需要切换渲染方式
+				composer.render(scene, camera);
+			};
+
+			animate();
+		</script>
+	</body>
+</html>
