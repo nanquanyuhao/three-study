@@ -153,8 +153,11 @@
 
         // 调整尺寸
         window.onresize = function() {
+
+            // 每次窗口变化需要重新计算投影矩阵
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
+            
             renderer.setSize(window.innerWidth, window.innerHeight);
             labelRenderer.setSize(window.innerWidth, window.innerHeight);
         }

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	<body>
+		<script async src="../lib/js/es-module-shims.js"></script>
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "../lib/js/three.module.js"
+				}
+			}
+		</script>
+
+		<script type="module">
+
+			import * as THREE from 'three';
+			import { OrbitControls } from '../lib/jsm/controls/OrbitControls.js';
+			import { VRButton } from '../lib/jsm/webxr/VRButton.js';
+
+			const scene = new THREE.Scene();
+			const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+			const renderer = new THREE.WebGLRenderer();
+			renderer.xr.enabled = true;
+			renderer.setSize( window.innerWidth, window.innerHeight );
+
+			// 创建了一个按钮，指示了 VR 的兼容性
+			document.body.appendChild( VRButton.createButton( renderer ) );
+			document.body.appendChild( renderer.domElement );
+
+			// 绑定控制器和摄像头
+            const controls = new OrbitControls(camera, renderer.domElement);
+
+			const geometry = new THREE.BoxGeometry();
+			const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+			const cube = new THREE.Mesh( geometry, material );
+			scene.add( cube );
+
+			camera.position.z = 5;
+
+			renderer.setAnimationLoop( function () {
+			 	cube.rotation.x += 0.01;
+			 	cube.rotation.y += 0.01;
+				renderer.render( scene, camera );
+
+			} );
+		</script>
+	</body>
+</html>
